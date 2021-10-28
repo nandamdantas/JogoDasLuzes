@@ -1,0 +1,168 @@
+linhas = 5
+colunas = 5 
+vazio = '\033[0;31;41mOOO\033[m'
+preenchimento = '\033[0;33;43mOOO\033[m'
+
+def le_jogadas():
+	historico = []
+	jogos = {}
+	try:
+		with open('historico.txt', 'r') as arqv:
+			for i in arqv.readlines():
+				historico.append(i.strip().split('<>'))
+		for i in range(len(historico)):
+			jogos[historico[i][0]] = int(historico[i][1])
+		melhor_jogador = min(jogos, key=jogos.get)
+		return melhor_jogador, jogos[melhor_jogador]
+	except:
+		return '-','-'
+
+def menu(melhor_jogador, jogadas):
+	print("\n"+"#"*41)
+	print(f"| Melhor jogador:   | {melhor_jogador:^7} | {jogadas:^7} |")
+	print("#"*41)
+	print("|Olá, seja bem vindo ao jogo das luzes! |")
+	print("|---------------------------------------|")
+	print("|[1] - Iniciar o jogo                   |")
+	print("|[2] - Sair do jogo                     |")
+	print("="*41 + "\n")
+	while True:
+		try:
+			opcao = int(input("[*] Escolha uma das opções do menu acima> "))
+			if opcao == 1:
+				break
+			elif opcao == 2:
+				exit("\nAté o próximo jogo!!!")
+			print("[-] Apenas 1 ou 2")
+		except ValueError:
+			print("[-] Selecione somente uma das opções do menu!")
+	while True:
+		nome = input("\n[*] Digite seu nome> ").title()
+		if nome.isalpha():
+			break
+		print("[-] Não pode conter números ou caracteres especiais!")
+	print()
+	while True:
+		try:
+			tentativas = int(input(f"[*] {nome}, digite o número de tentativas que deseja para tentar vencer> "))
+			if tentativas > 0:
+				break
+			print("[-] Apenas números positivos")
+		except ValueError:
+			print('[-] Somente números!')
+	return nome, tentativas
+
+def salva_jogada(nome, jogadas, lista_de_jogadas):
+	with open("historico.txt", "a") as f:
+		f.write(f"{nome}<>{jogadas}<>{lista_de_jogadas}\n")
+
+def jogo(tentativas):
+	jogadas = 1
+	lista_de_jogadas = []
+	tabuleiro = [[vazio for _ in range(colunas)] for _ in range(linhas)]
+	while jogadas <= tentativas:
+		mostra_tabuleiro(tabuleiro)
+		print(f"Limite de jogadas: {tentativas}")
+		print(f"Jogada atual     : {jogadas}")
+		print(f"Jogadas restantes: {tentativas - jogadas}\n")
+		while True:
+			try:
+				linha = int(input("[*] Digite a linha desejada> ")) - 1
+				if 0 <= linha < 5:
+					break
+				print("[-] Valor entre 1 a 5!")
+			except ValueError:
+				print('[-] Somente um valor numérico!')
+		while True:
+			try:
+				coluna = int(input("[*] Digite a coluna desejada> ")) - 1
+				if 0 <= coluna < 5:
+					break
+				print("[-] Valor entre 1 a 5!")
+			except ValueError:
+				print('[-] Somente um valor numérico!')
+		jogadas += 1
+		lista_de_jogadas.append(f'[{linha};{coluna}]')
+		marca_matriz(tabuleiro, linha, coluna)
+		if checa_tabuleiro(tabuleiro):
+			return 1, jogadas, lista_de_jogadas
+	mostra_tabuleiro(tabuleiro)
+	return 0, 0, 0
+	
+def marca_matriz(tabuleiro, linha, coluna):
+	tabuleiro[linha][coluna] = preenchimento
+	if linha > 0:
+		if tabuleiro[linha - 1][coluna] == vazio:
+			tabuleiro[linha - 1][coluna] = preenchimento
+		else:
+			tabuleiro[linha - 1][coluna] = vazio
+	if linha < 4:
+		if tabuleiro[linha + 1][coluna] == vazio:
+			tabuleiro[linha + 1][coluna] = preenchimento
+		else:
+			tabuleiro[linha + 1][coluna] = vazio
+	if coluna > 0:
+		if tabuleiro[linha][coluna - 1] == vazio:
+			tabuleiro[linha][coluna - 1] = preenchimento
+		else:
+			tabuleiro[linha][coluna - 1] = vazio
+	if coluna < 4:
+		if tabuleiro[linha][coluna + 1] == vazio:
+			tabuleiro[linha][coluna + 1] = preenchimento
+		else:
+			tabuleiro[linha][coluna + 1] = vazio
+
+def mostra_tabuleiro(tabuleiro):
+	print()
+	print('#'*7+' ', end='')
+	for n in range(1, colunas + 1):
+		print(f"({n:^3})", end="")
+	print("\n"+"="*33)
+	for l in range(linhas):
+		print(f"({(l + 1):^3}) - ", end="")
+		for c in range(colunas):
+			print(f"[{tabuleiro[l][c]:^3}]", end="")
+		print("\n"+"="*33)
+	print()
+	
+def checa_tabuleiro(tabuleiro):
+	total = linhas
+	for l in range(linhas):
+		if not vazio in tabuleiro[l]:
+			total -= 1
+			if total == 0:
+				return True
+
+def ganhador(nome, jogadas, tentativas):
+	print('\n'*3 + '-'*50)
+	print(f"Parabéns jogador(a) {nome}!!!")
+	print(f"\nVocê conseguiu ganhar o jogo com {jogadas} jogadas.")
+	print(f"Sobrando ainda: {tentativas - jogadas} tentativas")
+	print(f"\nAté a próxima rodada!")
+
+def perdedor(nome):
+	print('\n'*3 + '-'*50)
+	print(f"Poxa vida... Não foi dessa vez {nome}.")
+	print(f"\nNão fique triste, tente a sorte e jogue novamente!")
+
+def main():
+	melhor_jogador, jogadas = le_jogadas()
+	nome, tentativas = menu(melhor_jogador, jogadas)
+	resultado, jogadas, lista_de_jogadas = jogo(tentativas)
+	if resultado == 1:
+		ganhador(nome, jogadas, tentativas)
+		salva_jogada(nome, tentativas, lista_de_jogadas)
+	else:
+		perdedor(nome)
+	while True:
+		recomecar = input("\n[*] Começar de novo? (s)im/(n)ao> ").lower().strip()
+		if recomecar.isalpha() and recomecar[0] in 'sn':
+			if recomecar == 'n':
+				exit(f"\nAté a próxima {nome}!!!")
+			else:
+				main()
+		else:
+			print("[-] Somente '(s)im' ou '(n)ao'!")
+
+if __name__ == "__main__":
+	main()
