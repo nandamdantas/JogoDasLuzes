@@ -1,7 +1,7 @@
 linhas = 5
-colunas = 5 
-vazio = '\033[0;31;41mOOO\033[m'
-preenchimento = '\033[0;33;43mOOO\033[m'
+colunas = 5
+vazio = '\033[0;31;41mOO0\033[m'
+preenchimento = '\033[0;33;43mOO0\033[m'
 
 def le_jogadas():
 	historico = []
@@ -14,7 +14,9 @@ def le_jogadas():
 			jogos[historico[i][0]] = int(historico[i][1])
 		melhor_jogador = min(jogos, key=jogos.get)
 		return melhor_jogador, jogos[melhor_jogador]
-	except:
+	except IndexError:
+		return '-','-'
+	except FileNotFoundError:
 		return '-','-'
 
 def menu(melhor_jogador, jogadas):
@@ -35,7 +37,7 @@ def menu(melhor_jogador, jogadas):
 				exit("\nAté o próximo jogo!!!")
 			print("[-] Apenas 1 ou 2")
 		except ValueError:
-			print("[-] Selecione somente uma das opções do menu!")
+			print("[-] Selecione somente uma das opções do menu! (1/2)")
 	while True:
 		nome = input("\n[*] Digite seu nome> ").title()
 		if nome.isalpha():
@@ -68,29 +70,30 @@ def jogo(tentativas):
 		while True:
 			try:
 				linha = int(input("[*] Digite a linha desejada> ")) - 1
-				if 0 <= linha < 5:
+				if 0 <= linha < linhas:
 					break
-				print("[-] Valor entre 1 a 5!")
+				print(f"[-] Valor entre 1 a {linhas}!")
 			except ValueError:
 				print('[-] Somente um valor numérico!')
 		while True:
 			try:
 				coluna = int(input("[*] Digite a coluna desejada> ")) - 1
-				if 0 <= coluna < 5:
+				if 0 <= coluna < colunas:
 					break
-				print("[-] Valor entre 1 a 5!")
+				print(f"[-] Valor entre 1 a {colunas}!")
 			except ValueError:
 				print('[-] Somente um valor numérico!')
 		jogadas += 1
-		lista_de_jogadas.append(f'[{linha};{coluna}]')
+		lista_de_jogadas.append(f'{linha};{coluna}')
 		marca_matriz(tabuleiro, linha, coluna)
 		if checa_tabuleiro(tabuleiro):
-			return 1, jogadas, lista_de_jogadas
+			mostra_tabuleiro(tabuleiro)
+			return True, jogadas, lista_de_jogadas
 	mostra_tabuleiro(tabuleiro)
-	return 0, 0, 0
-	
+	return False, 0, 0
+
 def marca_matriz(tabuleiro, linha, coluna):
-	tabuleiro[linha][coluna] = preenchimento
+	tabuleiro[linha][coluna] = preenchimento # coordenada exata
 	if linha > 0:
 		if tabuleiro[linha - 1][coluna] == vazio:
 			tabuleiro[linha - 1][coluna] = preenchimento
@@ -111,6 +114,7 @@ def marca_matriz(tabuleiro, linha, coluna):
 			tabuleiro[linha][coluna + 1] = preenchimento
 		else:
 			tabuleiro[linha][coluna + 1] = vazio
+	return
 
 def mostra_tabuleiro(tabuleiro):
 	print()
@@ -126,12 +130,12 @@ def mostra_tabuleiro(tabuleiro):
 	print()
 	
 def checa_tabuleiro(tabuleiro):
-	total = linhas
-	for l in range(linhas):
+	linhas_preenchidas = 0 # ou colunas
+	for l in range(linhas): # ou colunas
 		if not vazio in tabuleiro[l]:
-			total -= 1
-			if total == 0:
-				return True
+			linhas_preenchidas += 1
+	if linhas_preenchidas == linhas:
+		return True
 
 def ganhador(nome, jogadas, tentativas):
 	print('\n'*3 + '-'*50)
@@ -149,9 +153,9 @@ def main():
 	melhor_jogador, jogadas = le_jogadas()
 	nome, tentativas = menu(melhor_jogador, jogadas)
 	resultado, jogadas, lista_de_jogadas = jogo(tentativas)
-	if resultado == 1:
+	if resultado:
 		ganhador(nome, jogadas, tentativas)
-		salva_jogada(nome, tentativas, lista_de_jogadas)
+		salva_jogada(nome, jogadas, lista_de_jogadas)
 	else:
 		perdedor(nome)
 	while True:
@@ -166,3 +170,4 @@ def main():
 
 if __name__ == "__main__":
 	main()
+
