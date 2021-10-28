@@ -12,10 +12,13 @@ A linguagem utilizada no desenvolvimento foi Python. O objetivo era justamente e
 
 ## INSTALAÇÃO E EXECUÇÃO
 
+Para jogar você precisa ter instalado o Python 3.7 ou superior. 
 O jogo pode ser executado tanto manualmentel (.exe) quanto pelo terminal. 
 Para executá-lo manualmente, basta fazer o download do arquivo *.py* e dar um click duplo no arquivo. O menu aparecerá em seguida. 
 Para executá-lo no terminal, basta abrir o arquivo no terminal (ou colar o código do jogo). É possível também jogar através de um editor de código de código aberto, como o VS Code, por exemplo.
 Recomendamos o VS Code para melhor visualização do código e do funcionamento do jogo simultaneamente.
+
+[Link p/ baixar o Python](https://www.python.org/downloads/) 
 
 [Link p/ baixar o VS Code ](https://code.visualstudio.com/download)
 
