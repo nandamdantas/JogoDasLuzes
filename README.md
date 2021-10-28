@@ -1,5 +1,5 @@
 <p align="center">
-   ![image](https://user-images.githubusercontent.com/65668818/139310254-b4b20342-e237-4340-957c-1f9564a0ce76.png)
+  <img src="https://user-images.githubusercontent.com/65668818/139310254-b4b20342-e237-4340-957c-1f9564a0ce76.png" height="150" width="175" alt="Unform" />
 </p>
 
 <h1 align="center">Jogo das Luzes</h1>
