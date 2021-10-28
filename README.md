@@ -1,3 +1,4 @@
+<h1 align="center">![J_go-removebg-preview](https://user-images.githubusercontent.com/65668818/139308878-ce1a3d4b-2638-488b-b6f6-128fac06c020.png)</h1>
 <h1 align="center">Jogo das Luzes</h1>
 <p align="center">Jogo desenvolvido para o treinamento de Lógica de Programação com Python.</p>
 
